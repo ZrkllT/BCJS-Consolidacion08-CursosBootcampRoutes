@@ -6,18 +6,20 @@ exports.encodeToken = (data) =>{
     return token
 }
 
-exports.decodeToken = (data) =>{
-    const token = jwt.decode(data, secretKey)
-    return token
-}
-
 exports.verifyToken = (data) =>{
     const decodeToken = jwt.decode(data, secretKey)
     return decodeToken
 }
 
 /*
-const verifyToken = (request, response, next) =>{
+exports.verifyToken = (request, response, next) =>{
+    const headToken = request.headers.authorization
+    const dataUser = jwt.decode(headToken, secretKey)
 
+    if(dataUser !== '000'){
+        return response.status(403).json({success: false, message: "Token inválido"})
+    }
+    request.conectado = dataUser.payload
+    next()
 }
 */

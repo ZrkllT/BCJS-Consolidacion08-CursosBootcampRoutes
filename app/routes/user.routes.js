@@ -11,7 +11,7 @@ let decodeTokenID
 /* middleware */
 router.use((request, response, next) =>{
     const headToken = request.headers.authorization
-    const decodeToken = tokenValidations.decodeToken(headToken)
+    const decodeToken = tokenValidations.verifyToken(headToken)
     
     if(request.url === '/api/signup' || request.url === '/api/signin' || request.url === '/api/bootcamp' ){
         next()

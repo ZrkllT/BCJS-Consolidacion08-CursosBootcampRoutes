@@ -1,7 +1,7 @@
 module.exports = {
   HOST: 'localhost',
   USER: 'postgres',
-  PASSWORD: 'no vean',
+  PASSWORD: 'asdasd',
   DB: 'db_bootcamp',
   dialect: 'postgres',
   pool: {
