@@ -12,7 +12,8 @@ let decodeTokenID
 router.use((request, response, next) =>{
     const headToken = request.headers.authorization
     const decodeToken = tokenValidations.decodeToken(headToken)
-    if(request.url === '/api/signup' || request.url === '/api/signin' ){
+    
+    if(request.url === '/api/signup' || request.url === '/api/signin' || request.url === '/api/bootcamp' ){
         next()
     }else{
         if(decodeToken.code !== '000'){
@@ -81,6 +82,7 @@ router.get('/api/user', async(request, response) =>{
 /*t*/
 router.put('/api/user/:id', async (request, response) =>{
     const idUser = request.params.id
+    console.log(idUser,decodeTokenID)
     if(Number(idUser) !== Number(decodeTokenID)){
         return response.status(400).json({ success: false, message: 'Solo puede editar SU información' })
     }
@@ -89,10 +91,24 @@ router.put('/api/user/:id', async (request, response) =>{
         return response.status(400).json({ success: false, message: 'Debe Indicar Nombre o Apellido a actualizar' })
     }
     const updatedUser = await userController.updateUserById( idUser,firstName,lastName )
+    if(updatedUser[0] === 0){
+        return response.status(400).json({ success: false, message: 'Usuario no existe o no tiene permiso para actualizar' })
+    }
     return response.json({ success: true, message: 'Usuario Actualizado' })
 })
+
 /*t*/
-//router.delete('/api/user/:id')
+router.delete('/api/user/:id', async (request, response) =>{
+    const idUser = request.params.id
+    if(!idUser){
+        return response.status(400).json({ success: false, message: 'Debe Indicar el Usuario a Eliminar' })
+    }
+    const deletedUser = await userController.deleteUserById(idUser)
+    if(deletedUser === 0){
+        return response.status(400).json({ success: false, message: 'Usuario no existe o no tiene permiso para eliminar' })
+    }
+    return response.json({ success: true, message: 'Usuario Eliminado' })
+})
 
 
 module.exports = router

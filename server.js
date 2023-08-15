@@ -18,12 +18,14 @@ app.listen(port, async () => {
 const userRoutes = require('./app/routes/user.routes.js')
 const bootcampRoutes = require('./app/routes/bootcamp.routes.js')
 
-const userController = require('./app/controllers/user.controller')
-const bootcampController = require('./app/controllers/bootcamp.controller')
+//const userController = require('./app/controllers/user.controller')
+//const bootcampController = require('./app/controllers/bootcamp.controller')
+
+/*token*/
 
 app.use(userRoutes)
-
-//app.use(bootcamproutes)
+app.use(bootcampRoutes)
+//app.use('/api/bootcamp',bootcampRoutes)
 
 
 /** Ejemplo base, esto se va a ejecutar por postman **

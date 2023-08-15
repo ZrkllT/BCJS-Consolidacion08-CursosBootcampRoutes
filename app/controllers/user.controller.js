@@ -111,7 +111,6 @@ exports.loginUser = async (userData) =>{
     lastName: wantedUser.lastName,
     email: wantedUser.email,
     accessToken: accessToken
-
   }
   return objUser
 }

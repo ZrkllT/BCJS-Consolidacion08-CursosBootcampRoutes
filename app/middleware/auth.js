@@ -10,3 +10,14 @@ exports.decodeToken = (data) =>{
     const token = jwt.decode(data, secretKey)
     return token
 }
+
+exports.verifyToken = (data) =>{
+    const decodeToken = jwt.decode(data, secretKey)
+    return decodeToken
+}
+
+/*
+const verifyToken = (request, response, next) =>{
+
+}
+*/

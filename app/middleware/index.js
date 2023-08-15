@@ -1,5 +1,5 @@
 const validaciones = {
-    validateEmail: require('./verifySingUp'),
+    validateEmail: require('./verifySingUp.js'),
     validateToken: require('./auth.js')
 }
 
