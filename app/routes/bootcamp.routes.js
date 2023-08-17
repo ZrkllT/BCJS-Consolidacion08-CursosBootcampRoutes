@@ -7,25 +7,8 @@ const validaciones = require('./../middleware/index.js')
 const emailValidations = validaciones.validateEmail
 const tokenValidations = validaciones.validateToken
 
-let decodeTokenID
-
-router.use((request, response, next) =>{
-    const headToken = request.headers.authorization
-    const decodeToken = tokenValidations.verifyToken(headToken)
-
-    if(request.url === '/api/bootcamp'){
-        next()
-    }else{
-        if(decodeToken === '000'){
-            return response.status(403).json({ success: false, message: 'Token invalido' })
-        }else{
-            decodeTokenID = decodeToken.payload.id
-            next()
-        }
-    }
-})
-
-router.post('/api/bootcamp', async (request,response) =>{
+/* rutas */
+router.post('/api/bootcamp', tokenValidations.verifyToken, async (request,response) =>{
     if(!request.body.title){
         return response.status(400).json({ success: false, message: 'Debe Indicar el Nombre del Bootcamp' })
     }
@@ -43,8 +26,9 @@ router.post('/api/bootcamp', async (request,response) =>{
     }
 })
 
-router.post('/api/bootcamp/adduser', async (request, response) =>{
+router.post('/api/bootcamp/adduser', tokenValidations.verifyToken, async (request, response) =>{
     const {idBootcamp, idUser} = request.body
+    const decodeTokenID = request.conectado
     /*validar que el usuario que se esta ingresado sea el logeado*/
     if(!idBootcamp){
         return response.status(400).json({ success: false, message: 'Debe Indicar el ID del Bootcamp' })
@@ -63,13 +47,13 @@ router.post('/api/bootcamp/adduser', async (request, response) =>{
     }
 })
 
-router.get('/api/bootcamp/:id', async (request, response) =>{
+router.get('/api/bootcamp/:id', tokenValidations.verifyToken, async (request, response) =>{
     const idBootcamp = request.params.id
     const detalleBootcamp = await bootcampController.findById(idBootcamp)
     return response.json({ success: true, message: 'Bootcamp', data: detalleBootcamp })
 })
 
-router.get('/api/bootcamp', async (request, response) =>{
+router.get('/api/bootcamp', tokenValidations.verifyToken, async (request, response) =>{
     const detalleBootcamp = await bootcampController.findAll()
     return response.json({ success: true, message: 'Bootcamp', data: detalleBootcamp })
 })

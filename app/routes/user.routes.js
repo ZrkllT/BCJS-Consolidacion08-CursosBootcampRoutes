@@ -7,26 +7,8 @@ const validaciones = require('./../middleware/index.js')
 const emailValidations = validaciones.validateEmail
 const tokenValidations = validaciones.validateToken
 
-let decodeTokenID
-/* middleware */
-router.use((request, response, next) =>{
-    const headToken = request.headers.authorization
-    const decodeToken = tokenValidations.verifyToken(headToken)
-    
-    if(request.url === '/api/signup' || request.url === '/api/signin' || request.url === '/api/bootcamp' ){
-        next()
-    }else{
-        if(decodeToken.code !== '000'){
-            return response.status(403).json({ success: false, message: 'Token invalido' })
-        }else{
-            decodeTokenID = decodeToken.payload.id
-            next()
-        }
-    }
-})
-
 /* rutas */
-router.post('/api/signup', async (request, response) =>{
+router.post('/api/signup', tokenValidations.verifyToken, async (request, response) =>{
     /* validacion cuerpo */
     if(!request.body.firstName){
         return response.status(400).json({ success: false, message: 'Debe Indicar el Nombre del Usuario' })
@@ -57,7 +39,7 @@ router.post('/api/signup', async (request, response) =>{
     
 })
 
-router.post('/api/signin', async (request, response) =>{
+router.post('/api/signin', tokenValidations.verifyToken, async (request, response) =>{
     try{
         const token = await userController.loginUser(request.body)
         return response.json({ success: true, message: 'Usuario Encontrado', data: token })
@@ -67,22 +49,22 @@ router.post('/api/signin', async (request, response) =>{
 })
 
 /*t*/
-router.get('/api/user/:id', async (request, response) =>{
+router.get('/api/user/:id', tokenValidations.verifyToken, async (request, response) =>{
     const idUser = request.params.id
     const wantedUser = await userController.findUserById(idUser)
     return response.json({ success: true, message: 'Usuario Encontrado', data: wantedUser })
 })
 
 /*t*/
-router.get('/api/user', async(request, response) =>{
+router.get('/api/user', tokenValidations.verifyToken, async(request, response) =>{
     const wantedUSers = await userController.findAll()
     return response.json({ success: true, message: 'Listado de Usuarios', data: wantedUSers })
 })
 
 /*t*/
-router.put('/api/user/:id', async (request, response) =>{
+router.put('/api/user/:id', tokenValidations.verifyToken, async (request, response) =>{
     const idUser = request.params.id
-    console.log(idUser,decodeTokenID)
+    const decodeTokenID = request.conectado
     if(Number(idUser) !== Number(decodeTokenID)){
         return response.status(400).json({ success: false, message: 'Solo puede editar SU información' })
     }
@@ -98,7 +80,7 @@ router.put('/api/user/:id', async (request, response) =>{
 })
 
 /*t*/
-router.delete('/api/user/:id', async (request, response) =>{
+router.delete('/api/user/:id', tokenValidations.verifyToken, async (request, response) =>{
     const idUser = request.params.id
     if(!idUser){
         return response.status(400).json({ success: false, message: 'Debe Indicar el Usuario a Eliminar' })

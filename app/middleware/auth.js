@@ -5,21 +5,24 @@ exports.encodeToken = (data) =>{
     const token = jwt.encode(data, secretKey)
     return token
 }
-
+/*
 exports.verifyToken = (data) =>{
     const decodeToken = jwt.decode(data, secretKey)
     return decodeToken
 }
-
-/*
+*/
 exports.verifyToken = (request, response, next) =>{
     const headToken = request.headers.authorization
-    const dataUser = jwt.decode(headToken, secretKey)
+    const decodeToken = jwt.decode(headToken, secretKey)
 
-    if(dataUser !== '000'){
-        return response.status(403).json({success: false, message: "Token inválido"})
+    if(request.url === '/api/signup' || request.url === '/api/signin' || request.url === '/api/bootcamp' ){
+        next()
+    }else{
+        if(decodeToken.code !== '000'){
+            return response.status(403).json({ success: false, message: 'Token Invalido' })
+        }else{
+            request.conectado = decodeToken.payload.id
+            next()
+        }
     }
-    request.conectado = dataUser.payload
-    next()
 }
-*/
